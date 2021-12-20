@@ -4,7 +4,7 @@ INSERT INTO political_parties (abbreviation, name) VALUES
 ('C', 'Det konservative Folkeparti'),
 ('V', 'Venstre, Danmarks Liberale Parti'),
 ('O', 'Dansk Folkeparti'),
-('F-SF', 'Socialistisk Folkeparti');
+('F', 'Socialistisk Folkeparti');
 
 INSERT INTO candidates (name, political_party_id) VALUES
 ('Marcel Meijer', '2'),

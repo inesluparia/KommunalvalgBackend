@@ -3,6 +3,10 @@ package eksamen.repository;
 import eksamen.model.PoliticalParty;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PoliticalPartyRepo extends JpaRepository<PoliticalParty, String> {
+import java.util.List;
+
+public interface PoliticalPartyRepo extends JpaRepository<PoliticalParty, Long> {
+
+List<PoliticalParty> findAll();
 
 }
