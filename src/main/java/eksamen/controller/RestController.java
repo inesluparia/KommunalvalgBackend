@@ -4,6 +4,7 @@ import eksamen.model.Candidate;
 import eksamen.model.PoliticalParty;
 import eksamen.repository.CandidateRepo;
 import eksamen.repository.PoliticalPartyRepo;
+import eksamen.service.PoliticalPartyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,9 @@ public class RestController {
     CandidateRepo candidateRepo;
 
     @Autowired
+    PoliticalPartyService politicalPartyService;
+
+    @Autowired
     PoliticalPartyRepo partyRepo;
 
     @GetMapping("/candidates")
@@ -47,9 +51,15 @@ public class RestController {
         return ResponseEntity.ok().body(candidateRepo.findById(id).get());
     }
 
+//    @GetMapping("/parties")
+//    public ResponseEntity<List<PoliticalParty>> getAllParties(){
+//        List<PoliticalParty> parties = partyRepo.findAll();
+//        return ResponseEntity.ok().body(parties);
+//    }
+
     @GetMapping("/parties")
     public ResponseEntity<List<PoliticalParty>> getAllParties(){
-        List<PoliticalParty> parties = partyRepo.findAll();
+        List<PoliticalParty> parties = politicalPartyService.GetParties();
         return ResponseEntity.ok().body(parties);
     }
 

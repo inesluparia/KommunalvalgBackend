@@ -13,7 +13,7 @@ public class Candidate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 120")
     private int votes;
 
     private String name;
