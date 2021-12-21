@@ -1,7 +1,6 @@
 package eksamen.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,9 +20,8 @@ public class PoliticalParty {
     @Column(columnDefinition = "integer default 0")
     private int totalVotes;
 
-    //@JsonBackReference
-    //@OneToMany(mappedBy = "politicalParty")
-    //private List<Candidate> candidates;
+    @Column(columnDefinition = "integer default 0")
+    private double votePercentage;
 
     @JsonBackReference
     @OneToMany(mappedBy = "politicalParty")
@@ -32,11 +30,25 @@ public class PoliticalParty {
 
     public PoliticalParty() {}
 
-    public PoliticalParty(String abbreviation, String name, int totalVotes, List<Candidate> candidates) {
+    public PoliticalParty(long id, String abbreviation, String name, int totalVotes, double votePercetage, List<Candidate> candidates) {
+        this.id = id;
         this.abbreviation = abbreviation;
         this.name = name;
         this.totalVotes = totalVotes;
+        this.votePercentage = votePercetage;
         this.candidates = candidates;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public double getVotePercentage() {
+        return votePercentage;
+    }
+
+    public void setVotePercentage(double votePercentage) {
+        this.votePercentage = votePercentage;
     }
 
     public long getId() {
