@@ -69,30 +69,28 @@ public class RestController {
     }
 
 
-    //@CrossOrigin(value = "*", exposedHeaders = "Location")
-    @PostMapping(value = "/candidates/{partyid}", consumes = "application/json")
+    @CrossOrigin(value = "*", exposedHeaders = "Location")
+    @PostMapping(value = "/candidates/{partyId}", consumes = "application/json")
     public ResponseEntity<Candidate> AddCandidate(@RequestBody Candidate candidate, @PathVariable Long partyId){
         PoliticalParty party = partyRepo.findById(partyId).get();
-        //System.out.println(party.getName());
         candidate.setPoliticalParty(party);
         candidateRepo.save(candidate);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-                //.header("Location", "/candidates/" + created.getId()).build();
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Location", "/candidates/" + candidate.getId()).build();
     }
 
-//    @PostMapping(value="/candidates", consumes = "application/json")
-//    Candidate addCandidate(@RequestBody Candidate candidate) {
-//        return candidateRepo.save(candidate);
-//    }
-
+    @CrossOrigin(value = "*", exposedHeaders = "Location")
     @PutMapping("/candidates/{id}")
     public ResponseEntity<Candidate> updateCandidate (@PathVariable Long id, @RequestBody Candidate candidate) throws Exception {
        Candidate candToUpdate = candidateRepo.findById(id)
-                .orElseThrow(() -> new Exception ("Kommune not found with id=" + id));
-        candidateRepo.save(candidate);
-        return new ResponseEntity<>(candidate, HttpStatus.OK);
-    }
+                .orElseThrow(() -> new Exception ("Candidate not found with id" + id));
+       candToUpdate.setName(candidate.getName());
+       candidateRepo.save(candToUpdate);
 
+       return ResponseEntity.status(HttpStatus.OK)
+                .header("Location", "/candidates/" + id).build();
+    }
 
 }
 
