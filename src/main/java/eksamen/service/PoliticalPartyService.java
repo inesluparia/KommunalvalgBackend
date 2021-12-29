@@ -6,9 +6,6 @@ import eksamen.repository.CandidateRepo;
 import eksamen.repository.PoliticalPartyRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,50 +19,27 @@ public class PoliticalPartyService {
     @Autowired
     CandidateRepo candidateRepo;
 
+
     public List<PoliticalParty> GetParties() {
 
         List<Candidate> candidates = candidateRepo.findAll();
-
-        Map<Long, Integer> partyVotesMap = getVotesMap(candidates);
-
-        int votesCount = 0;
-
         List<PoliticalParty> parties = politicalPartyRepo.findAll();
 
-        //count votes and set votes total
-        for (int i = 0; i < parties.size(); i ++){
-            int partyTotal =  partyVotesMap.get(parties.get(i).getId());
-            votesCount += partyTotal;
-            parties.get(i).setTotalVotes(partyTotal);
-        }
+        //Sum of all votes so far
+        int totalVotes = candidates.stream().map(Candidate::getVotes).reduce(0,(result, votes) -> result += votes);
 
-        //calculate and set percentage
-        for (int i = 0; i < parties.size(); i ++){
-            double partyVotes = parties.get(i).getTotalVotes();
-            double percentage =  (partyVotes * 100) / votesCount;
+        //get a Map of parties and respective totalVotes
+        Map<PoliticalParty, Integer> partyVotesMap = candidates.stream().collect(Collectors
+                        .toMap(Candidate::getPoliticalParty, Candidate::getVotes, (result, votes) -> result += votes));
+
+        //set values totalVotes and percentage in parties fields
+        for (PoliticalParty politicalParty : parties) {
+            int partyVotes = partyVotesMap.get(politicalParty);
+            politicalParty.setTotalVotes(partyVotes);
+            double percentage = (partyVotes * 100.0) / totalVotes;
             double rounded = (double) Math.round(percentage * 100) / 100;
-            parties.get(i).setVotePercentage(rounded);
+            politicalParty.setVotePercentage(rounded);
         }
-
-            return parties;
-
-//for next time with more time...
-//        List<PoliticalParty> updatedParties = parties.stream()
-//                .map( p -> {
-//                    int partyTotal =  partyVotesMap.get(p.getId());
-//                    p.setTotalVotes(partyTotal);
-//                    return p;
-//                }).collect(Collectors.toList());
-    }
-
-    private Map<Long, Integer> getVotesMap(List<Candidate> candidates) {
-        Map<Long, Integer> partyVotesMap = new HashMap<>();
-        for (Candidate c : candidates){
-            Long partyId = c.getPoliticalParty().getId();
-            partyVotesMap.putIfAbsent(partyId, 0);
-            partyVotesMap.put(partyId, partyVotesMap.get(partyId)+ c.getVotes());
-        }
-        return partyVotesMap;
+        return parties;
     }
 }
-

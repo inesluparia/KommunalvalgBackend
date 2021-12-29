@@ -18,11 +18,6 @@ public class Candidate {
 
     private String name;
 
-//    @JsonManagedReference
-//    @ManyToOne
-//    @JoinColumn(name="political_party_id")
-//    private PoliticalParty politicalParty;
-
     @ManyToOne
     @JoinColumn(name = "political_party_id")
     private PoliticalParty politicalParty;
@@ -38,6 +33,12 @@ public class Candidate {
         this.name = name;
         this.politicalParty = politicalParty;
         votes = 0;
+    }
+
+    public Candidate(String name, PoliticalParty politicalParty, int votes) {
+        this.name = name;
+        this.politicalParty = politicalParty;
+        this.votes = votes;
     }
 
     public int getVotes() {

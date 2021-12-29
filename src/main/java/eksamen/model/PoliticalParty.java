@@ -17,10 +17,12 @@ public class PoliticalParty {
 
     private String name;
 
-    @Column(columnDefinition = "integer default 0")
+    //@Column(columnDefinition = "integer default 0")
+    @Transient
     private int totalVotes;
 
-    @Column(columnDefinition = "integer default 0")
+    //@Column(columnDefinition = "integer default 0")
+    @Transient
     private double votePercentage;
 
     @JsonBackReference
@@ -37,6 +39,14 @@ public class PoliticalParty {
         this.totalVotes = totalVotes;
         this.votePercentage = votePercetage;
         this.candidates = candidates;
+    }
+
+    public PoliticalParty(long id, String abbreviation, String name) {
+        this.id = id;
+        this.abbreviation = abbreviation;
+        this.name = name;
+        totalVotes = 0;
+        votePercentage = 0;
     }
 
     public void setId(long id) {
