@@ -1,5 +1,6 @@
 package eksamen.controller;
 
+import eksamen.ResourceNotFoundException;
 import eksamen.model.Candidate;
 import eksamen.model.PoliticalParty;
 import eksamen.repository.CandidateRepo;
@@ -14,13 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.*;
-
-
 import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 
-@org.springframework.web.bind.annotation.RestController
+@Controller
 @CrossOrigin("*")
 public class RestController {
 
@@ -48,14 +47,10 @@ public class RestController {
         Optional<Candidate> candidate = candidateRepo.findById(id);
         if (!candidate.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok().body(candidateRepo.findById(id).get());
+        else
+            return ResponseEntity.ok().body(candidateRepo.findById(id).get());
     }
 
-//    @GetMapping("/parties")
-//    public ResponseEntity<List<PoliticalParty>> getAllParties(){
-//        List<PoliticalParty> parties = partyRepo.findAll();
-//        return ResponseEntity.ok().body(parties);
-//    }
 
     @GetMapping("/parties")
     public ResponseEntity<List<PoliticalParty>> getAllParties(){
@@ -64,15 +59,22 @@ public class RestController {
     }
 
     @DeleteMapping("/candidates/{id}")
-        void deleteOne(@PathVariable("id") Long id) {
-        candidateRepo.deleteById(id);
+        ResponseEntity<?> deleteOne(@PathVariable("id") Long id) {
+        Optional<Candidate> candidate = candidateRepo.findById(id);
+        if (!candidate.isPresent())
+            return ResponseEntity.notFound().build();
+        else {
+            candidateRepo.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
     }
 
 
     @CrossOrigin(value = "*", exposedHeaders = "Location")
     @PostMapping(value = "/candidates/{partyId}", consumes = "application/json")
-    public ResponseEntity<Candidate> AddCandidate(@RequestBody Candidate candidate, @PathVariable Long partyId){
-        PoliticalParty party = partyRepo.findById(partyId).get();
+    public ResponseEntity<Candidate> AddCandidate(@RequestBody Candidate candidate, @PathVariable Long partyId) throws Exception {
+        PoliticalParty party = partyRepo.findById(partyId)
+                .orElseThrow(() -> new ResourceNotFoundException ("Party not found with id: " + partyId));
         candidate.setPoliticalParty(party);
         candidateRepo.save(candidate);
 
@@ -84,7 +86,7 @@ public class RestController {
     @PutMapping("/candidates/{id}")
     public ResponseEntity<Candidate> updateCandidate (@PathVariable Long id, @RequestBody Candidate candidate) throws Exception {
        Candidate candToUpdate = candidateRepo.findById(id)
-                .orElseThrow(() -> new Exception ("Candidate not found with id" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
        candToUpdate.setName(candidate.getName());
        candidateRepo.save(candToUpdate);
 
